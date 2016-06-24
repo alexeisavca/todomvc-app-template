@@ -244,10 +244,10 @@
 						_react2['default'].createElement(
 							'strong',
 							null,
-							todos().count()
+							todos().filter(FILTERS["Active"]).count()
 						),
 						' ',
-						todos().count() == 1 ? "item" : "items",
+						todos().filter(FILTERS["Active"]).count() == 1 ? "item" : "items",
 						' left'
 					),
 					_react2['default'].createElement(

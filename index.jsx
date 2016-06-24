@@ -96,7 +96,7 @@ run(document.getElementById('todo-container'), {
 		{!todos().isEmpty() &&
 		<footer className="footer">
 			<span className="todo-count">
-				<strong>{todos().count()}</strong> {todos().count() == 1 ? "item" : "items"} left
+				<strong>{todos().filter(FILTERS["Active"]).count()}</strong> {todos().filter(FILTERS["Active"]).count() == 1 ? "item" : "items"} left
 			</span>
 			<ul className="filters">
 				{Object.keys(FILTERS).map(mkFilter(filter))}
