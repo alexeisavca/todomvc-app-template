@@ -149,6 +149,12 @@
 		}
 	};
 	
+	var allCompleted = function allCompleted(todos) {
+		return todos.every(function (todo) {
+			return todo.get('completed');
+		});
+	};
+	
 	(0, _elmy2['default'])(document.getElementById('todo-container'), {
 		model: (0, _immutable.fromJS)({
 			newTodo: "",
@@ -174,6 +180,14 @@
 			clearCompleted: function clearCompleted(model) {
 				return model.update('todos', function (todos) {
 					return todos.filter(FILTERS["Active"]);
+				});
+			},
+	
+			toggleAll: function toggleAll(model, nextState, completed) {
+				return model.update('todos', function (todos) {
+					return todos.map(function (todo) {
+						return todo.set('completed', completed);
+					});
 				});
 			}
 		},
@@ -202,7 +216,14 @@
 				!todos().isEmpty() && _react2['default'].createElement(
 					'section',
 					{ className: 'main' },
-					_react2['default'].createElement('input', { className: 'toggle-all', type: 'checkbox' }),
+					_react2['default'].createElement('input', {
+						className: 'toggle-all',
+						type: 'checkbox',
+						checked: allCompleted(todos()),
+						onChange: function (e) {
+							return send("toggleAll", !allCompleted(todos()));
+						}
+					}),
 					_react2['default'].createElement(
 						'label',
 						{ htmlFor: 'toggle-all' },

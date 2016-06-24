@@ -46,6 +46,8 @@ const FILTERS = {
 	Completed: todo => todo.get('completed')
 };
 
+let allCompleted = todos => todos.every(todo => todo.get('completed'));
+
 run(document.getElementById('todo-container'), {
 	model: fromJS({
 		newTodo: "",
@@ -66,7 +68,10 @@ run(document.getElementById('todo-container'), {
 
 		todos: (model, nextState, index, action) => "delete" == action ? model.deleteIn(['todos', index]) : nextState(),
 
-		clearCompleted: model => model.update('todos', todos => todos.filter(FILTERS["Active"]))
+		clearCompleted: model => model.update('todos', todos => todos.filter(FILTERS["Active"])),
+
+		toggleAll: (model, nextState, completed) =>
+				model.update('todos', todos => todos.map(todo => todo.set('completed', completed)))
 	},
 
 	view: ({newTodo, todos, filter}, {Todos}, send) => <section className="todoapp">
@@ -77,7 +82,12 @@ run(document.getElementById('todo-container'), {
 		</header>
 		{!todos().isEmpty() &&
 		<section className="main">
-			<input className="toggle-all" type="checkbox"/>
+			<input
+					className="toggle-all"
+					type="checkbox"
+					checked={allCompleted(todos())}
+					onChange={e => send("toggleAll", !allCompleted(todos()))}
+			/>
 			<label htmlFor="toggle-all">Mark all as complete</label>
 			<ul className="todo-list">
 				{Todos(todos().filter(FILTERS[filter()]))}
@@ -96,7 +106,7 @@ run(document.getElementById('todo-container'), {
 			}
 		</footer>}
 	</section>
-})
+});
 
 
 
