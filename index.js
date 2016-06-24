@@ -90,8 +90,6 @@
 			text: ""
 		}),
 	
-		/* These are here just to show the structure of the list items */
-		/* List items should get the class `editing` when editing and `completed` when marked as completed */
 		view: function view(_ref, _, send) {
 			var text = _ref.text;
 			var completed = _ref.completed;
@@ -154,12 +152,19 @@
 	
 		update: {
 			add: function add(model) {
-				return model.update('todos', function (todos) {
+				return model.get("newTodo").trim().length ? model.update('todos', function (todos) {
 					return todos.set(new Date().getTime(), Todo.model.set('text', model.get('newTodo')));
-				}).set('newTodo', "");
+				}).set('newTodo', "") : model;
 			},
+	
 			todos: function todos(model, nextState, index, action) {
 				return "delete" == action ? model.deleteIn(['todos', index]) : nextState();
+			},
+	
+			clearCompleted: function clearCompleted(model) {
+				return model.update('todos', function (todos) {
+					return todos.filter(FILTERS["Active"]);
+				});
 			}
 		},
 	
@@ -219,16 +224,17 @@
 						{ className: 'filters' },
 						Object.keys(FILTERS).map(mkFilter(filter))
 					),
-					_react2['default'].createElement(
+					!todos().filter(FILTERS["Completed"]).isEmpty() && _react2['default'].createElement(
 						'button',
-						{ className: 'clear-completed' },
+						{ className: 'clear-completed', onClick: function (e) {
+								return send("clearCompleted");
+							} },
 						'Clear completed'
 					)
 				)
 			);
 		}
 	});
-	/* Remove this if you don't implement routing */ /* Hidden if no completed items are left ↓ */
 
 /***/ },
 /* 1 */
@@ -29807,8 +29813,7 @@
 	
 	            return _react2["default"].createElement(boundClasses[path[0]], {
 	              model: _this.props.model.getIn([].concat(path, [key])),
-	              send: (_props$send = _this.props.send).bind.apply(_props$send, [null].concat(path, [key])),
-	              key: key
+	              send: (_props$send = _this.props.send).bind.apply(_props$send, [null].concat(path, [key]))
 	            });
 	          }).toArray() : _react2["default"].createElement(boundClasses[path[0]], {
 	            model: _this.props.model.getIn(path),

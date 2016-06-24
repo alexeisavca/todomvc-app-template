@@ -20,8 +20,6 @@ let Todo = {
 		text: ""
 	}),
 
-	/* These are here just to show the structure of the list items */
-	/* List items should get the class `editing` when editing and `completed` when marked as completed */
 	view: ({text, completed, editing}, _, send) => <li className={cn({completed: completed(), editing: editing()})}>
 	<div className="view">
 		{boundCheckbox(completed, {className: "toggle"})}
@@ -56,11 +54,15 @@ run(document.getElementById('todo-container'), {
 	},
 
 	update: {
-		add: model =>
+		add: model => model.get("newTodo").trim().length ?
 				model.update('todos', todos => todos.set(
 						new Date().getTime(), Todo.model.set('text', model.get('newTodo'))
-				)).set('newTodo', ""),
-		todos: (model, nextState, index, action) => "delete" == action ? model.deleteIn(['todos', index]) : nextState()
+				)).set('newTodo', "") :
+				model,
+
+		todos: (model, nextState, index, action) => "delete" == action ? model.deleteIn(['todos', index]) : nextState(),
+
+		clearCompleted: model => model.update('todos', todos => todos.filter(FILTERS["Active"]))
 	},
 
 	view: ({newTodo, todos, filter}, {Todos}, send) => <section className="todoapp">
@@ -82,12 +84,12 @@ run(document.getElementById('todo-container'), {
 			<span className="todo-count">
 				<strong>{todos().count()}</strong> {todos().count() == 1 ? "item" : "items"} left
 			</span>
-			{/* Remove this if you don't implement routing */}
 			<ul className="filters">
 				{Object.keys(FILTERS).map(mkFilter(filter))}
 			</ul>
-			{/* Hidden if no completed items are left ↓ */}
-			<button className="clear-completed">Clear completed</button>
+			{!todos().filter(FILTERS["Completed"]).isEmpty() &&
+			<button className="clear-completed" onClick={e => send("clearCompleted")}>Clear completed</button>
+			}
 		</footer>}
 	</section>
 })
