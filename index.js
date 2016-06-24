@@ -103,12 +103,22 @@
 					boundCheckbox(completed, { className: "toggle" }),
 					_react2['default'].createElement(
 						'label',
-						null,
+						{ onClick: function (e) {
+								return editing(true);
+							} },
 						text()
 					),
 					_react2['default'].createElement('button', { className: 'destroy', onClick: send.bind(null, "delete") })
 				),
-				boundInput(text, { className: 'edit' })
+				boundInput(text, { className: 'edit',
+					onBlur: function onBlur(e) {
+						return editing(false);
+					},
+					autoFocus: true,
+					onKeyUp: function onKeyUp(e) {
+						return ENTER_KEY == e.which ? editing(false) : null;
+					}
+				})
 			);
 		}
 	};
@@ -184,7 +194,7 @@
 						null,
 						'todos'
 					),
-					boundInput(newTodo, { className: "new-todo", placeholder: "What needs to be done?", autofocus: true,
+					boundInput(newTodo, { className: "new-todo", placeholder: "What needs to be done?", autoFocus: true,
 						onKeyUp: function onKeyUp(e) {
 							return ENTER_KEY == e.which ? send('add') : null;
 						} })

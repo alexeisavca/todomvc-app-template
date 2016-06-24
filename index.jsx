@@ -23,10 +23,14 @@ let Todo = {
 	view: ({text, completed, editing}, _, send) => <li className={cn({completed: completed(), editing: editing()})}>
 	<div className="view">
 		{boundCheckbox(completed, {className: "toggle"})}
-		<label>{text()}</label>
+		<label onClick={e => editing(true)}>{text()}</label>
 		<button className="destroy" onClick={send.bind(null, "delete")}/>
 	</div>
-	{boundInput(text, {className: 'edit'})}
+	{boundInput(text, {className: 'edit',
+		onBlur: e => editing(false),
+		autoFocus: true,
+		onKeyUp: e => ENTER_KEY == e.which ? editing(false) : null
+	})}
 </li>
 };
 
@@ -68,7 +72,7 @@ run(document.getElementById('todo-container'), {
 	view: ({newTodo, todos, filter}, {Todos}, send) => <section className="todoapp">
 		<header className="header">
 			<h1>todos</h1>
-			{boundInput(newTodo, {className: "new-todo", placeholder:"What needs to be done?", autofocus: true,
+			{boundInput(newTodo, {className: "new-todo", placeholder:"What needs to be done?", autoFocus: true,
 				onKeyUp: e => ENTER_KEY == e.which ? send('add') : null})}
 		</header>
 		{!todos().isEmpty() &&
